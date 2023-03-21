@@ -34,7 +34,7 @@ export const SearchForm = memo(() => {
                 className={s.button}
                 size="large"
                 disabled={!searchText.trim()}
-                type="primary"
+                type="default"
                 icon={<SearchOutlined/>}
                 onClick={handleButtonClick}
             />
