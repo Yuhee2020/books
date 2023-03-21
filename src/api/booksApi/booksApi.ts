@@ -1,16 +1,9 @@
 import {instance} from "../instance";
 
 export const booksApi = {
-    getBooks() {
-        return instance.get<GetBooksResponseType>('volumes', {
-            params: {
-                q: `js subject:art`,
-                maxResults: 2,
-                startIndex: 0,
-                printType: "books",
-                orderBy: "newest"
-            }
-        })
+    getBooks(params:GetBooksParamsType) {
+        return instance.get<GetBooksResponseType>('volumes', {params}
+        )
     },
     getBook(id: string) {
         return instance.get<BookType>(`volumes/${id}`)
@@ -33,6 +26,7 @@ export type GetBooksResponseType = {
 export type BookType = {
     kind: string;
     id: string;
+    etag:string;
     volumeInfo: {
         title: string;
         authors: string[];
@@ -44,6 +38,10 @@ export type BookType = {
         imageLinks: {
             smallThumbnail: string;
             thumbnail: string;
+            large:string;
+            medium:string;
+            extraLarge:string;
+            small:string;
         };
         language: string;
     };
