@@ -4,6 +4,9 @@ import {useAppDispatch, useAppSelector} from "../../hooks";
 import {getBooksTC, setStartIndex} from "../../store/reducers/booksReducer";
 import {booksApi} from "../../api/booksApi/booksApi";
 import Meta from "antd/es/card/Meta";
+import s from "./Books.module.scss"
+import {BookCard} from "../../components/bookCard/BookCard";
+
 
 export const Books = () => {
     const dispatch = useAppDispatch()
@@ -25,28 +28,11 @@ export const Books = () => {
     }, [category, orderBy, searchText, startIndex])
 
     return (
-        <div>
+        <div className={s.container}>
             {!!totalBooks && <h1>{totalBooks}</h1>}
-            {books && books.map(book => {
-
-                return (<div key={book.etag}>{book.volumeInfo.title}
-                    <Card
-                        key={book.etag}
-                        style={{ width: 300 }}
-                        cover={
-                            <img
-                                alt="example"
-                                src={book.volumeInfo.imageLinks.thumbnail}
-                            />
-                        }
-                    >
-                        <Meta
-                            title={book.volumeInfo.title}
-                            description={book.volumeInfo.authors}
-                        />
-                    </Card>
-                </div>)
-            })}
+            <div className={s.cards}>
+                {books && books.map(book =><BookCard key={book.etag} book={book}/>)}
+            </div>
             {isLoadingMore && <Button onClick={handleLoadMoreClick}>load more</Button>}
         </div>
     );
