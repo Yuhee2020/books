@@ -1,11 +1,13 @@
 import React from 'react';
 import {Card} from "antd";
 import Meta from "antd/es/card/Meta";
-import {BookType} from "../../api/booksApi/booksApi";
 import s from "./BookCard.module.scss"
 import noImage from "../../assets/images/No-Image-Placeholder.svg.png"
 import {useNavigate} from "react-router-dom";
 import {BOOK} from "../rotes/Rotes";
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
+import {BookType} from "../../api/booksApi/types";
 
 type PropsType = {
     book: BookType
@@ -13,6 +15,8 @@ type PropsType = {
 export const BookCard = ({book}: PropsType) => {
     const navigate = useNavigate()
     const {authors, title, categories, imageLinks} = book.volumeInfo
+    const categoriesText=categories ? categories[0] : ""
+    const authorsText=authors ? authors.join(", ") : ""
     const handleCardClick = () => {
         navigate(`${BOOK}/${book.id}`)
     }
@@ -23,19 +27,18 @@ export const BookCard = ({book}: PropsType) => {
             key={book.etag}
             cover={
                 <div className={s.cover}>
-                    <img
-                        className={s.img}
-                        alt="example"
-                        src={imageLinks ? imageLinks.thumbnail : noImage}
-                    />
+                    <LazyLoadImage className={s.img}
+                                   effect="blur"
+                                   alt="example"
+                                   src={imageLinks ? imageLinks.thumbnail : noImage}/>
                 </div>
             }
         >
             <div>
-                <div className={s.category}>{categories}</div>
+                <div className={s.category}>{categoriesText}</div>
                 <Meta
                     title={title}
-                    description={authors}
+                    description={authorsText}
                 />
             </div>
         </Card>

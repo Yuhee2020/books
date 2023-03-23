@@ -5,11 +5,12 @@ import {Button, Input} from 'antd'
 
 
 import s from './SearchForm.module.scss'
-import {useAppDispatch} from "../../hooks";
+import {useAppDispatch, useAppSelector} from "../../hooks";
 import {setSearch} from "../../store/reducers/booksReducer";
 
 export const SearchForm = memo(() => {
     const dispatch = useAppDispatch()
+    const isLoading=useAppSelector(state => state.books.isLoading)
     const [searchText, setSearchText] = useState('')
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
         setSearchText(e.currentTarget.value)
@@ -24,7 +25,7 @@ export const SearchForm = memo(() => {
     return (
         <div className={s.formContainer}>
             <Input
-                placeholder="Enter task description..."
+                placeholder="Books search"
                 size="large"
                 onKeyPress={handleEnterPress}
                 onChange={handleInputChange}
@@ -33,10 +34,10 @@ export const SearchForm = memo(() => {
             <Button
                 className={s.button}
                 size="large"
-                disabled={!searchText.trim()}
                 type="default"
                 icon={<SearchOutlined/>}
                 onClick={handleButtonClick}
+                loading={isLoading}
             />
         </div>
     )

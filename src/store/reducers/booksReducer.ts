@@ -1,14 +1,14 @@
 import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit'
-
-import {setAppError, setLoading} from './appReducer'
-import {booksApi, BookType, GetBooksParamsType} from "../../api/booksApi/booksApi";
 import {StateType} from "../../hooks";
 import {INITIAL_START_INDEX} from "../../constants/constants";
+import {BookType, ErrorType, GetBooksParamsType} from "../../api/booksApi/types";
+import {booksApi} from "../../api/booksApi/booksApi";
+import {AxiosError} from 'axios';
 
 
 export const getBooksTC = createAsyncThunk(
     'books/getBooks',
-    async (params, {dispatch, getState}) => {
+    async (params, { getState, rejectWithValue}) => {
         const state = getState() as StateType
         const {
             category,
@@ -18,7 +18,6 @@ export const getBooksTC = createAsyncThunk(
             printType,
             startIndex
         } = state.books
-        dispatch(setLoading(true))
         try {
             const params = {
                 q: `${searchText}${category === "all" ? "" : ` subject:${category}`}`,
@@ -30,27 +29,22 @@ export const getBooksTC = createAsyncThunk(
             const res = await booksApi.getBooks(params)
             return res.data
         } catch (err: any) {
-            dispatch(setAppError(err.response.data.message))
-            return err
-        } finally {
-            dispatch(setLoading(false))
+            const error = err as AxiosError<ErrorType>
+            return rejectWithValue(error.response?.data.error.message)
         }
     },
 )
 export const getBookTC = createAsyncThunk(
     'books/getBook',
-    async (params: string, {dispatch}) => {
-        dispatch(setLoading(true))
+    async (params: string, { rejectWithValue}) => {
         try {
-            const res = booksApi.getBook(params)
-            return res
+            const res = await booksApi.getBook(params)
+            return res.data
         } catch (err: any) {
-            dispatch(setAppError(err.response.data.message))
-            return err
-        } finally {
-            dispatch(setLoading(false))
+            const error = err as AxiosError<ErrorType>
+            return rejectWithValue(error.response?.data.error.message)
         }
-    },
+    }
 )
 
 
@@ -58,7 +52,8 @@ export const slice = createSlice({
     name: 'books',
     initialState: {
         books: [] as BookType[],
-        book:null as null | BookType,
+        book: null as null | BookType,
+        isLoading: false,
         totalBooks: 0,
         selectedBook: null,
         maxResults: 30,
@@ -67,7 +62,8 @@ export const slice = createSlice({
         printType: "books",
         searchText: "",
         category: "all",
-        isLoadingMore: false
+        isLoadingMore: false,
+        error: null as null | string
     },
     reducers: {
         setSearch(state, action: PayloadAction<string>) {
@@ -85,23 +81,43 @@ export const slice = createSlice({
         setStartIndex(state) {
             state.startIndex += state.maxResults
         },
+        setError(state, action: PayloadAction<string | null>) {
+            state.error = action.payload
+        },
 
     },
     extraReducers: builder => {
-        builder.addCase(getBooksTC.fulfilled, (state, action) => {
-            if (state.startIndex > 0) {
-                state.books = [...state.books, ...action.payload.items]
-            } else {
-                state.books = action.payload.items
+        builder
+            .addCase(getBooksTC.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(getBooksTC.fulfilled, (state, action) => {
+                state.isLoading = false
+                if (state.startIndex > 0) {
+                    state.books = [...state.books, ...action.payload.items]
+                } else {
+                    state.books = action.payload.items
+                }
                 state.totalBooks = action.payload.totalItems
-            }
-            state.isLoadingMore = !!state.books.length && state.books.length <= state.totalBooks;
-        })
-            .addCase(getBookTC.fulfilled,(state,action)=>{
-                state.book=action.payload
+                state.isLoadingMore = !!state.books && state.books.length < state.totalBooks;
+            })
+            .addCase(getBooksTC.rejected, (state, action) => {
+                state.isLoading = false
+                state.error = action.payload as string
+            })
+            .addCase(getBookTC.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(getBookTC.fulfilled, (state, action) => {
+                state.book = action.payload
+                state.isLoading = false
+            })
+            .addCase(getBookTC.rejected, (state, action) => {
+                state.isLoading = false
+                state.error = action.payload as string
             })
     }
 })
 
 export const booksReducer = slice.reducer
-export const {setSearch, setCategory, setOrderBy, setStartIndex} = slice.actions
+export const {setSearch, setCategory, setOrderBy, setStartIndex, setError} = slice.actions

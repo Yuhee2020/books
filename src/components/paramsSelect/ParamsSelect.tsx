@@ -14,9 +14,9 @@ export const ParamsSelect = ({title, options, onSelect, value}: PropsType) => {
         onSelect(e)
     }
     return (
-        <div className={s.select}>
+        <div className={s.selectContainer}>
             {title} <Select onChange={handleSelectChange}
-                            style={{width: "150px"}}
+                            className={s.select}
                             options={options.map(el => ({value: el, label: el}))}
                             value={value}
         />
