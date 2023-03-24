@@ -2,9 +2,8 @@ import React from 'react'
 
 import { Button, Result } from 'antd'
 import { useNavigate } from 'react-router-dom'
-import {ROOT} from "../../components/rotes/Rotes";
 
-
+import { ROOT } from '../../components/rotes/Rotes'
 
 export const Error404 = () => {
   const navigate = useNavigate()

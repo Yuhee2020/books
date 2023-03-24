@@ -1,15 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { combineReducers } from 'redux'
 import thunkMiddleware from 'redux-thunk'
-import {booksReducer} from "./reducers/booksReducer";
 
-
+import { booksReducer } from './reducers/booksReducer'
 
 export const rootReducer = combineReducers({
-    books: booksReducer,
+  books: booksReducer,
 })
 
 export const store = configureStore({
-    reducer: rootReducer,
-    middleware: getDefaultMiddleware => getDefaultMiddleware().prepend(thunkMiddleware),
+  reducer: rootReducer,
+  middleware: getDefaultMiddleware => getDefaultMiddleware().prepend(thunkMiddleware),
 })

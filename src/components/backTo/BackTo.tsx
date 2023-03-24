@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { Button } from 'antd'
@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom'
 
 import s from './BackTo.module.scss'
 
-export const BackTo = () => {
+export const BackTo = memo(() => {
   const navigate = useNavigate()
 
   return (
@@ -16,7 +16,7 @@ export const BackTo = () => {
       icon={<ArrowLeftOutlined />}
       type="text"
     >
-     Back
+      Back
     </Button>
   )
-}
+})

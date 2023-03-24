@@ -1,4 +1,6 @@
-export const theme={token: {
-        colorPrimary: 'gray',
-        borderRadius: 0,
-    }}
+export const theme = {
+  token: {
+    colorPrimary: 'gray',
+    borderRadius: 0,
+  },
+}
