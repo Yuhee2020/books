@@ -1,6 +1,6 @@
 # Books
 
-[see project]()
+[see project](https://books-rust.vercel.app)
 
 ### App for search books
 
@@ -26,6 +26,7 @@
 - esLint
 
 #### How to start
+- clone project
 - yarn install
 - yarn start
 
